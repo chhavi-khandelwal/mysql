@@ -1,0 +1,78 @@
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| BCode     | varchar(20) | NO   | PRI | NULL    |       |
+| Librarian | varchar(20) | NO   |     | NULL    |       |
+| Holdings  | varchar(30) | NO   |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
++-------+---------------+---------------+
+| BCode | Librarian     | Holdings      |
++-------+---------------+---------------+
+| B1    | John Smith    | 2 Anglesea Rd |
+| B2    | Mary Jones    | 34 Pearse St  |
+| B3    | Francis Owens | Grange X      |
++-------+---------------+---------------+
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| Title     | varchar(20) | NO   | PRI | NULL    |       |
+| Author    | varchar(20) | NO   |     | NULL    |       |
+| Publisher | varchar(20) | NO   |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
++---------------------+---------------+------------+
+| Title               | Author        | Publisher  |
++---------------------+---------------+------------+
+| A History of Dublin | David Little  | Wiley      |
+| Computers           | Blaise Pascal | Applewoods |
+| How to Fish         | Amy Fly       | Stop Press |
+| Susannah            | Ann Brown     | Macmillan  |
+| The Wife            | Ann Brown     | Macmillan  |
++---------------------+---------------+------------+
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| branch  | varchar(4)  | NO   | PRI |         |       |
+| Title   | varchar(20) | NO   | PRI |         |       |
+| #copies | tinyint(4)  | NO   |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
++--------+---------------------+---------+
+| branch | Title               | #copies |
++--------+---------------------+---------+
+| B1     | A History of Dublin |       1 |
+| B1     | How to Fish         |       2 |
+| B1     | Susannah            |       3 |
+| B2     | Computers           |       2 |
+| B2     | How to Fish         |       4 |
+| B2     | The Wife            |       3 |
+| B3     | A History Of Dublin |       1 |
+| B3     | Computers           |       4 |
+| B3     | Susannah            |       3 |
+| B3     | The Wife            |       1 |
++--------+---------------------+---------+
++----------+
+| Title    |
++----------+
+| Susannah |
+| The Wife |
++----------+
++--------+
+| Branch |
++--------+
+| B1     |
+| B2     |
+| B3     |
++--------+
++--------+
+| branch |
++--------+
+| B1     |
+| B3     |
+| B2     |
++--------+
++--------+-----------------------+
+| branch | Total number of books |
++--------+-----------------------+
+| B1     |                     6 |
+| B2     |                     9 |
+| B3     |                     9 |
++--------+-----------------------+
