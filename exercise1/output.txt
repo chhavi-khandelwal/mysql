@@ -1,0 +1,66 @@
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| name    | varchar(20) | NO   | PRI | NULL    |       |
+| filling | varchar(20) | NO   | PRI | NULL    |       |
++---------+-------------+------+-----+---------+-------+
++-------+---------+
+| name  | filling |
++-------+---------+
+| Brown | Beef    |
+| Brown | Ham     |
+| Brown | Turkey  |
+| Green | Beef    |
+| Green | Cheese  |
+| Green | Turkey  |
+| Jones | Cheese  |
++-------+---------+
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| LNAME   | varchar(20) | NO   | PRI | NULL    |       |
+| PHONE   | int(7)      | NO   |     | NULL    |       |
+| ADDRESS | varchar(30) | NO   |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
++-----------+---------+---------------+
+| LNAME     | PHONE   | ADDRESS       |
++-----------+---------+---------------+
+| Buttery   | 7023421 | College St    |
+| Lincoln   | 6834523 | Lincoln Place |
+| O'Neill's | 6742134 | Pearse St     |
+| Old Nag   | 7678132 | Dame St       |
++-----------+---------+---------------+
++-----------+-------+---------+-------+
+| LOCATION  | BREAD | FILLING | PRICE |
++-----------+-------+---------+-------+
+| Buttery   | White | Cheese  |  1.00 |
+| Buttery   | White | Ham     |  1.10 |
+| Lincoln   | Rye   | Beef    |  1.35 |
+| Lincoln   | Rye   | Ham     |  1.25 |
+| Lincoln   | White | Ham     |  1.30 |
+| O'Neill's | White | Cheese  |  1.20 |
+| O'Neill's | White | Turkey  |  1.35 |
+| O'Neill's | Whole | Ham     |  1.25 |
+| Old Nag   | Rye   | Beef    |  1.35 |
+| Old Nag   | Rye   | Ham     |  1.40 |
++-----------+-------+---------+-------+
++-----------+
+| LOCATION  |
++-----------+
+| Buttery   |
+| O'Neill's |
++-----------+
++-----------+
+| LOCATION  |
++-----------+
+| Buttery   |
+| O'Neill's |
++-----------+
++-----------+----------------------+
+| LOCATION  | COUNT(DISTINCT name) |
++-----------+----------------------+
+| Buttery   |                    3 |
+| Lincoln   |                    2 |
+| O'Neill's |                    3 |
+| Old Nag   |                    2 |
++-----------+----------------------+
