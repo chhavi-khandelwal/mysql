@@ -1,0 +1,204 @@
+//What do different columns in the output of EXPLAIN mean? 
+//What possible values can those have? 
+//What is the meaning of those values?
+
+SOLUTION: 
+Each output row from EXPLAIN provides information about one table.
+
+
+Column	      Meaning
+id	          The SELECT identifier
+select_type	  The SELECT type
+table	        The table for the output row
+partitions	  The matching partitions
+type	        The join type
+possible_keys	The possible indexes to choose
+key	          The index actually chosen
+key_len	      The length of the chosen key
+ref	          The columns compared to the index
+rows	        Estimate of rows to be examined
+filtered	    Percentage of rows filtered by table condition
+Extra	        Additional information
+
+ *id
+
+The SELECT identifier. This is the sequential number of the SELECT within the query. The value can be NULL if the row refers to the union result of other rows. In this case, the table column shows a value like <unionM,N> to indicate that the row refers to the union of the rows with id values of M and N.
+
+ *select_type
+
+The type of SELECT, which can be any of those shown in the following table.
+
+select_type
+ Value	                                    Meaning
+SIMPLE												Simple SELECT (not using UNION or subqueries)
+PRIMARY												Outermost SELECT
+UNION													Second or later SELECT statement in a UNION
+DEPENDENT UNION								Second or later SELECT statement in a UNION, dependent on outer query
+UNION RESULT									Result of a UNION.
+SUBQUERY											First SELECT in subquery
+DEPENDENT SUBQUERY						First SELECT in subquery, dependent on outer query
+DERIVED												Derived table SELECT (subquery in FROM clause)
+UNCACHEABLE SUBQUERY					A subquery for which the result cannot be cached and must be re-evaluated for each row of the outer query
+UNCACHEABLE UNION							The second or later select in a UNION that belongs to an uncacheable subquery (see UNCACHEABLE SUBQUERY)
+
+DEPENDENT typically signifies the use of a correlated subquery.
+DEPENDENT SUBQUERY evaluation differs from UNCACHEABLE SUBQUERY evaluation. For DEPENDENT SUBQUERY, the subquery is re-evaluated only once for each set of different values of the variables from its outer context. For UNCACHEABLE SUBQUERY, the subquery is re-evaluated for each row of the outer context.
+Cacheability of subqueries differs from caching of query results in the query cache
+
+ *table
+
+The name of the table to which the row of output refers. This can also be one of the following values:
+<unionM,N>: The row refers to the union of the rows with id values of M and N.
+<derivedN>: The row refers to the derived table result for the row with an id value of N. 
+A derived table may result, for example, from a subquery in the FROM clause.
+
+*type
+
+The join type.
+
+*possible_keys
+
+The possible_keys column indicates which indexes MySQL can choose for use to find the rows in this table.
+Note that this column is totally independent of the order of the tables as displayed in the output from EXPLAIN. 
+That means that some of the keys in possible_keys might not be usable in practice with the generated table order.
+If this column is NULL, there are no relevant indexes. 
+In this case, you may be able to improve the performance of your query by examining the WHERE clause to check whether 
+it refers to some column or columns that would be suitable for indexing. If so, create an appropriate index and check the query with EXPLAIN again
+
+*key
+
+The key column indicates the key (index) that MySQL actually decided to use.
+ If MySQL decides to use one of the possible_keys indexes to look up rows, that index is listed as the key value.
+It is possible that key will name an index that is not present in the possible_keys value. 
+This can happen if none of the possible_keys indexes are suitable for looking up rows,
+but all the columns selected by the query are columns of some other index. 
+That is, the named index covers the selected columns, so although it is not used to determine which rows to retrieve,
+ an index scan is more efficient than a data row scan.
+
+*key_len
+
+The key_len column indicates the length of the key that MySQL decided to use. The length is NULL if the key column says NULL. Note that the value of key_len enables you to determine how many parts of a multiple-part key MySQL actually uses.
+
+*ref
+
+The ref column shows which columns or constants are compared to the index named in the key column to select rows from the table.
+
+*rows
+
+The rows column indicates the number of rows MySQL believes it must examine to execute the query.
+
+*filtered
+
+The filtered column indicates an estimated percentage of table rows that will be filtered by the table condition. 
+That is, rows shows the estimated number of rows examined and rows × filtered / 100 shows the number of rows that will be joined with previous tables.
+
+*Extra
+
+This column contains additional information about how MySQL resolves the query. 
+
+/*Q2: We use EXPLAIN to optimize slow SQL queries used in our application. Lets say we have a comments table in our application that has a foreign key, user_id, referencing to users table. EXPLAINing the query that finds all the comments made by a user gives us following result.
+
+mysql> EXPLAIN SELECT * FROM comments WHERE user_id = 41;
+
++-------------+------+---------------+---------+-------+---------+-------------+
+| select_type | type | key | key_len | ref | rows | Extra |
++-------------+------+---------------+---------+-------+---------+-------------+
+| SIMPLE | ALL | NULL | NULL | NULL | 1002345 | Using where |
++-------------+------+---------------+---------+-------+---------+-------------+
+
+mysql> SELECT count(id) FROM comments;
+
++-----------+
+| count(id) |
++-----------+
+| 1002345   |
++-----------+
+
+2.1 The value under 'rows' column in the output of EXPLAIN query and SELECT query after it are same. What does it mean?
+
+2.2 Is the SELECT query optimal? If no, how do we optimize it? */
+
+SOLUTION: 2.1
+The rows column indicates the number of rows MySQL believes it must examine to execute the query.
+So in first query, it requires to scan all the 1002345 rows to find user_id = 41
+
+SOLUTION:2.2
+creating index would optimize the query
+
+/*Q3. In Rails world, we have someting called polymorphic associations (http://guides.rubyonrails.org/association_basics.html#polymorphic-associations). Lets say in our web application, we can let users comment on photographs and articles. Some of rows in comments table are represented as following:
+
+mysql> SELECT * FROM comments LIMIT 5;
+
++----+------------------+----------------+---------+
+| id | commentable_type | commentable_id | user_id |
++----+------------------+----------------+---------+
+| 1 + Article | 1 | 1 |
++----+------------------+----------------+---------+
+| 2 + Photo | 1 | 1 |
++----+------------------+----------------+---------+
+| 3 + Photo | 2 | 2 |
++----+------------------+----------------+---------+
+| 4 + Photo | 2 | 2 |
++----+------------------+----------------+---------+
+| 5 + Article | 1 | 2 |
++----+------------------+----------------+---------+
+
+When we need to fetch comments of a user on a particular Article or Photo we form a query like:
+
+mysql> EXPLAIN SELECT * FROM comments WHERE commentable_id = 1 AND commentable_type = 'Article' AND user_id = 1;
+
++-------------+------+---------------+---------+-------+---------+-------------+
+| select_type | type | key | key_len | ref | rows | Extra |
++-------------+------+---------------+---------+-------+---------+-------------+
+| SIMPLE | ALL | NULL | NULL | NULL | 1000025 | Using where |
++-------------+------+---------------+---------+-------+---------+-------------+
+
+It seems that we do not have any index on any of the columns. And whole comments table is scanned to fetch those comments.
+
+3.1 We decide to index columns in comments table to optimize the SELECT query. What column(s) will you index in which order? Ask the exercise creator for a hint if you are confused.
+*/
+
+SOLUTION 3.1:
+we need commentable_id, commentable_type and user_id to get the result for particlular query.
+So, we can make make multiple column index such as INDEX (user_id, commentable_type, commentable_id) while creating the table.
+
+/*Q4:
+4.1 EXPLAIN a SELECT query against one of your databases which employs an INNER JOIN between two tables. What does the output look like? What does the values under different columns mean? Do you get only one row in EXPLAIN's output?
+4.2 Form the same select query in above question using a subquery instead of a JOIN. What does the EXPLAIN output look like now? Which query is better and why?
+*/
+
+SOLUTION 4.1:
+EXPLAIN SELECT c.article_id, c.comment FROM Users as u, Comments as c, Articles as a WHERE u.id = a.user_id AND c.article_id = a.id AND u.name = "user3";
++----+-------------+-------+------+-----------------+------------+---------+----------------+------+-------------+
+| id | select_type | table | type | possible_keys   | key        | key_len | ref            | rows | Extra       |
++----+-------------+-------+------+-----------------+------------+---------+----------------+------+-------------+
+|  1 | SIMPLE      | u     | ALL  | PRIMARY         | NULL       | NULL    | NULL           |    5 | Using where |
+|  1 | SIMPLE      | a     | ref  | PRIMARY,user_id | user_id    | 4       | articleDB.u.id |    1 | Using index |
+|  1 | SIMPLE      | c     | ref  | article_id      | article_id | 4       | articleDB.a.id |    1 |             |
++----+-------------+-------+------+-----------------+------------+---------+----------------+------+-------------+
+
+id           :select identifier tells it uses first select
+select_type  :not using UNION or subqueries
+table        :The name of the table to which the row of output refers
+type         :tells the join type; for Users table a full table scan is done for each combination of rows from the previous tables; for Comments and Articles, All rows with matching index values are read from these table for each combination of rows from the previous tables
+possible_keys:MySQL can choose Users primary key, Articles primary and user_id both and Comments article_id to use to find the rows in this table.
+key          :The query finally uses user_id from Articles and article_id from Comments to get the result.
+key_len      : MySQL actually uses 4 parts of a multiple-part key.
+ref          :it shows that inside articleDB, users id and articles id is used as the index.
+rows         :it tells the no. of rows it required to scan from respective tables.
+Extra        :it tells that with first table where clause is used and with second table indexes are used in the query.
+
+SOLUTION 4.2:
+EXPLAIN SELECT article_id, comment FROM Comments WHERE article_id in (SELECT id FROM Articles WHERE user_id in (SELECT id FROM Users WHERE name = "user3"));
++----+--------------------+----------+-----------------+---------------+---------+---------+------+------+-------------+
+| id | select_type        | table    | type            | possible_keys | key     | key_len | ref  | rows | Extra       |
++----+--------------------+----------+-----------------+---------------+---------+---------+------+------+-------------+
+|  1 | PRIMARY            | Comments | ALL             | NULL          | NULL    | NULL    | NULL |   11 | Using where |
+|  2 | DEPENDENT SUBQUERY | Articles | unique_subquery | PRIMARY       | PRIMARY | 4       | func |    1 | Using where |
+|  3 | DEPENDENT SUBQUERY | Users    | unique_subquery | PRIMARY       | PRIMARY | 4       | func |    1 | Using where |
++----+--------------------+----------+-----------------+---------------+---------+---------+------+------+-------------+
+
+JOIN is better than the nested query.
+The no. of rows scanned is lesser in comparision hence optimizing the query.
+In JOINs RDBMS can create an execution plan that is better for the query and can predict what data should be loaded to be processed and save time, 
+unlike the sub-query where it will run all the queries and load all their data to do the processing.
