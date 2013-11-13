@@ -185,7 +185,8 @@ SELECT * FROM Comments;
 -- |  5 | comment5  |       4 |          1 |
 -- |  6 | comment6  |       5 |         10 |
 -- |  7 | comment7  |       5 |          3 |
--- |  8 | comment8  |       4 |          5 |
+-- |  8 | comment8  |       4 |          5SELECT c1.article_id FROM Comments c1 LEFT JOIN Comments c2 ON c1.article_id = c2.article_id AND c1.user_id = c2.user_id AND c1.id != c2.id GROUP BY c1.article_id HAVING COUNT(c2.id) = 0;
+ |
 -- |  9 | comment9  |       2 |          5 |
 -- | 10 | comment10 |       3 |         10 |
 -- +----+-----------+---------+------------+
@@ -266,7 +267,7 @@ SELECT article_id, COUNT(article_id) as maximum_value FROM Comments GROUP BY art
 
 #Write a query to select article which does not have more than one comment by the same user
 #using left join and group by
-SELECT a.id FROM Articles a LEFT JOIN Comments c ON a.id = c.article_id GROUP BY a.id HAVING count(DISTINCT a.user_id) = 1; 
+SELECT c1.article_id FROM Comments c1 LEFT JOIN Comments c2 ON c1.article_id = c2.article_id AND c1.user_id = c2.user_id AND c1.id != c2.id GROUP BY c1.article_id HAVING COUNT(c2.id) = 0;
 -- +----+
 -- | id |
 -- +----+
