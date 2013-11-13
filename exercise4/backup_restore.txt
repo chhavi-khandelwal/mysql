@@ -1,0 +1,15 @@
+//creates backup for library DB in lib_backup.sql
+$ mysqldump -u root -p library > lib_backup.sql
+
+//returns to mysql prompt
+$ mysql -h localhost -p -u root
+
+CREATE DATABASE restore;
+Query OK, 1 row affected (0.00 sec)
+
+//exits mysql
+exit
+Bye
+
+//restores lib_backup.sql in restore DB
+$ mysql -u root -p restore < lib_backup.sql
