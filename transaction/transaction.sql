@@ -124,7 +124,7 @@ SELECT * FROM users u INNER JOIN accounts a ON u.account_no = a.account_no FOR U
 -- 2 rows in set (0.00 sec)
 
 
-UPDATE users u INNER JOIN accounts a ON u.account_no = a.account_no SET a.balance = a.balance - 500 WHERE name = "userA" AND a.balance > 0;
+UPDATE users u INNER JOIN accounts a ON u.account_no = a.account_no SET a.balance = a.balance - 500 WHERE name = "userA" AND a.balance >= 500 ;
 -- Query OK, 1 row affected (0.00 sec)
 -- Rows matched: 1  Changed: 1  Warnings: 0
 
@@ -156,11 +156,11 @@ SELECT * FROM users u INNER JOIN accounts a ON u.account_no = a.account_no FOR U
 
 SELECT a.balance INTO @balance FROM users u INNER JOIN accounts a ON u.account_no = a.account_no WHERE name = "userA";
 
-UPDATE users u INNER JOIN accounts a ON u.account_no = a.account_no SET a.balance = a.balance - 200 WHERE name = "userA" AND @balance > 0;
+UPDATE users u INNER JOIN accounts a ON u.account_no = a.account_no SET a.balance = a.balance - 200 WHERE name = "userA" AND @balance >= 200;
 -- Query OK, 1 row affected (0.00 sec)
 -- Rows matched: 1  Changed: 1  Warnings: 0
 
-UPDATE users u INNER JOIN accounts a ON u.account_no = a.account_no SET a.balance = a.balance + 200 WHERE name = "userB" AND @balance > 0;
+UPDATE users u INNER JOIN accounts a ON u.account_no = a.account_no SET a.balance = a.balance + 200 WHERE name = "userB" AND @balance >= 200;
 -- Query OK, 1 row affected (0.00 sec)
 -- Rows matched: 1  Changed: 1  Warnings: 0
 
