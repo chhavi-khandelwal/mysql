@@ -1,0 +1,90 @@
+CREATE DATABASE Email_Campaign;
+Query OK, 1 row affected (0.00 sec)
+
+USE Email_Campaign;
+Database changed
+
+CREATE TABLE email_subscribers
+(
+  email VARCHAR(20) NOT NULL,
+  phone_no INT(20) NOT NULL,
+  city VARCHAR(20) NOT NULL,
+  PRIMARY KEY(email)
+);
+
+DESC email_subscribers;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| email    | varchar(30) | NO   | PRI | NULL    |       |
+| city     | varchar(20) | NO   |     | NULL    |       |
+| phone_no | int(20)     | NO   |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysqlimport -u root -p --local --fields-terminated-by=" , " Email_Campaign email_subscribers.txt
+
+-- What all cities did people respond from
+SELECT DISTINCT city FROM email_subscribers;
++----------+
+| city     |
++----------+
+| Chennai  |
+| Delhi    |
+| Lucknow  |
+| Mumbai   |
+| Kolkatta |
++----------+
+5 rows in set (0.00 sec)
+
+-- How many people responded from each city
+SELECT city, COUNT(email) AS per_city_people FROM email_subscribers GROUP BY city;
++----------+--------------+
+| city     | COUNT(email) |
++----------+--------------+
+| Chennai  |           42 |
+| Delhi    |           40 |
+| Kolkatta |           38 |
+| Lucknow  |           39 |
+| Mumbai   |           41 |
++----------+--------------+
+5 rows in set (0.01 sec)
+
+-- Which city were the maximum respondents from?
+
+SELECT COUNT(email) INTO @max  FROM email_subscribers GROUP BY city ORDER BY COUNT(email) DESC LIMIT 1;
+Query OK, 1 row affected (0.00 sec)
+
+SELECT city, COUNT(email) AS respondents_per_city FROM email_subscribers GROUP BY city HAVING respondents_per_city = @max;
++---------+----------------------+
+| city    | respondents_per_city |
++---------+----------------------+
+| Chennai |                   42 |
++---------+----------------------+
+1 row in set (0.00 sec)
+
+-- What all email domains did people respond from ?
+SELECT DISTINCT SUBSTRING_INDEX(email, '@', -1) AS DOMAINS FROM email_subscribers;
++-------------+
+| DOMAINS     |
++-------------+
+| me.com      |
+| yahoo.com   |
+| gmail.com   |
+| hotmail.com |
++-------------+
+4 rows in set (0.01 sec)
+
+
+-- Which is the most popular email domain among the respondents ?
+SELECT COUNT(SUBSTRING_INDEX(email, '@', -1)) INTO @popular_domain FROM email_subscribers GROUP BY SUBSTRING_INDEX(email, '@', -1) ORDER BY COUNT(SUBSTRING_INDEX(email, '@', -1)) DESC LIMIT 1;
+Query OK, 1 row affected (0.00 sec)
+
+SELECT SUBSTRING_INDEX(email, '@', -1) AS domain, COUNT(SUBSTRING_INDEX(email, '@', -1)) AS occurence FROM email_subscribers GROUP BY domain HAVING occurence = @popular_domain;
++-----------+-----------+
+| domain    | occurence |
++-----------+-----------+
+| me.com    |        51 |
+| yahoo.com |        51 |
++-----------+-----------+
+2 rows in set (0.01 sec)
