@@ -7,21 +7,22 @@ USE bank;
 CREATE TABLE users 
 (   
 	id INT AUTO_INCREMENT,   
-	name VARCHAR(20) NOT NULL,   
-	email VARCHAR(20) NOT NULL, 
+	name VARCHAR(255) NOT NULL,   
+	email VARCHAR(255) NOT NULL, 
 	PRIMARY KEY(id)
 );
 -- Query OK, 0 rows affected (0.17 sec)
 
 DESC users;
--- +-------+-------------+------+-----+---------+----------------+
--- | Field | Type        | Null | Key | Default | Extra          |
--- +-------+-------------+------+-----+---------+----------------+
--- | id    | int(11)     | NO   | PRI | NULL    | auto_increment |
--- | name  | varchar(20) | NO   |     | NULL    |                |
--- | email | varchar(20) | NO   |     | NULL    |                |
--- +-------+-------------+------+-----+---------+----------------+
+-- +-------+--------------+------+-----+---------+----------------+
+-- | Field | Type         | Null | Key | Default | Extra          |
+-- +-------+--------------+------+-----+---------+----------------+
+-- | id    | int(11)      | NO   | PRI | NULL    | auto_increment |
+-- | name  | varchar(255) | NO   |     | NULL    |                |
+-- | email | varchar(255) | NO   |     | NULL    |                |
+-- +-------+--------------+------+-----+---------+----------------+
 -- 3 rows in set (0.00 sec)
+
 
 INSERT INTO users 
 (name, email) VALUES 
@@ -42,7 +43,7 @@ SELECT * FROM users;
 CREATE TABLE accounts
 (   
 	id INT AUTO_INCREMENT,
-	account_no BIGINT(20) UNSIGNED NOT NULL,  
+	account_no VARCHAR(255) NOT NULL,  
 	balance DECIMAL(22,2) NOT NULL,
 	user_id INT NOT NULL,
 	PRIMARY KEY(id), 
@@ -50,15 +51,16 @@ CREATE TABLE accounts
 );
 
 DESC accounts;
--- +------------+---------------------+------+-----+---------+----------------+
--- | Field      | Type                | Null | Key | Default | Extra          |
--- +------------+---------------------+------+-----+---------+----------------+
--- | id         | int(11)             | NO   | PRI | NULL    | auto_increment |
--- | account_no | bigint(15) unsigned | NO   |     | NULL    |                |
--- | balance    | decimal(22,2)       | NO   |     | NULL    |                |
--- | user_id    | int(11)             | NO   | MUL | NULL    |                |
--- +------------+---------------------+------+-----+---------+----------------+
+-- +------------+---------------+------+-----+---------+----------------+
+-- | Field      | Type          | Null | Key | Default | Extra          |
+-- +------------+---------------+------+-----+---------+----------------+
+-- | id         | int(11)       | NO   | PRI | NULL    | auto_increment |
+-- | account_no | varchar(255)  | NO   |     | NULL    |                |
+-- | balance    | decimal(22,2) | NO   |     | NULL    |                |
+-- | user_id    | int(11)       | NO   | MUL | NULL    |                |
+-- +------------+---------------+------+-----+---------+----------------+
 -- 4 rows in set (0.00 sec)
+
 
 
 INSERT INTO accounts 
